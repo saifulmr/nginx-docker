@@ -65,6 +65,7 @@ ARG CONFIG="\
 		--add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
 		--add-dynamic-module=/usr/src/ngx_brotli \
 		--add-dynamic-module=/usr/src/ngx_http_geoip2_module \
+    --add-dynamic-module=/usr/src/nginx-auth-jwt \
 	"
 WORKDIR /usr/src/
 
@@ -152,10 +153,7 @@ RUN \
   && mkdir build \
   && cd build \
   && cmake -DBUILD_SHARED_LIBS=1 -DBUILD_TESTING=off -GNinja .. \
-  && ninja \
-  && ls -la \
-  && ls -la /usr/src/boringssl
-
+  && ninja 
 
 RUN \
   echo "Building nginx ..." \

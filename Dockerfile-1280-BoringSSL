@@ -62,7 +62,7 @@ ARG CONFIG="\
 		--with-http_v2_module \
 		--with-http_v3_module \
 		--add-module=/usr/src/njs/nginx \
-    --add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
+		--add-module=/usr/src/headers-more-nginx-module-$HEADERS_MORE_VERSION \
 		--add-dynamic-module=/usr/src/ngx_brotli \
 		--add-dynamic-module=/usr/src/ngx_http_geoip2_module \
 	"
@@ -91,7 +91,7 @@ RUN \
 		musl-dev \
 		go \
 		ninja \
-    openssl \
+		openssl \
 		git \
 		pkgconfig \ 
 		yajl-dev \
@@ -105,7 +105,7 @@ RUN \
 		geoip-dev \
 		perl-dev \
   && apk add --no-cache --virtual .auth-jwt-build-deps \
-    jansson-dev \
+		jansson-dev \
 	&& apk add --no-cache --virtual .brotli-build-deps \
 		autoconf \
 		libtool \
@@ -173,13 +173,12 @@ RUN \
   && make install \
 	&& ls -la /usr/lib/nginx/modules \
 	&& rm -rf /etc/nginx/html/ \
-  && ldd /usr/sbin/nginx \
 	&& mkdir /etc/nginx/conf.d/ \
 	&& strip /usr/sbin/nginx* \
 	&& strip /usr/lib/nginx/modules/*.so \
 	\
 	&& curl -fSL https://ssl-config.mozilla.org/ffdhe2048.txt > /etc/ssl/dhparam.pem \
-  && openssl req -x509 -newkey rsa:4096 -nodes -keyout /etc/ssl/localhost.key -out /etc/ssl/localhost.pem -days 365 -sha256 -subj '/CN=localhost' \
+	&& openssl req -x509 -newkey rsa:4096 -nodes -keyout /etc/ssl/localhost.key -out /etc/ssl/localhost.pem -days 365 -sha256 -subj '/CN=localhost' \
 	\
 	&& apk add --no-cache --virtual .gettext gettext \
 	\
@@ -196,6 +195,7 @@ ARG NGINX_COMMIT
 
 ENV NGINX_VERSION $NGINX_VERSION
 ENV NGINX_COMMIT $NGINX_COMMIT
+COPY --from=base /usr/src/boringssl/build/*.so /usr/lib/
 COPY --from=base /tmp/runDeps.txt /tmp/runDeps.txt
 COPY --from=base /etc/nginx /etc/nginx
 COPY --from=base /etc/ssl /etc/ssl
@@ -220,7 +220,8 @@ RUN \
   && ln -s /usr/lib/nginx/modules /etc/nginx/modules \
   && mkdir -p /etc/nginx/certs \
   && ls -la /usr/lib \
-  && ls -la /usr/lib/nginx/modules
+  && ls -la /usr/lib/nginx/modules \
+  && ldd /usr/sbin/nginx
   
 COPY src/etc/nginx /etc/nginx
 

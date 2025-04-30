@@ -9,7 +9,7 @@ ARG NGX_BROTLI_COMMIT=a71f9312c2deb28875acc7bacfdd5695a111aa53
 ARG BORINGSSL_COMMIT=a70ec8dd2cc1816e9deadda2f6e536640380e20c
 
 # https://github.com/openresty/headers-more-nginx-module#installation
-ARG HEADERS_MORE_VERSION=0.34
+ARG HEADERS_MORE_VERSION=0.38
 
 # https://github.com/leev/ngx_http_geoip2_module/releases
 ARG GEOIP2_VERSION=3.4 
@@ -67,15 +67,6 @@ ARG CONFIG="\
 		--add-dynamic-module=/usr/src/ngx_http_geoip2_module \
 	"
 WORKDIR /usr/src/
-
-# RUN \
-#   apk add --no-cache --virtual .build-deps \
-#     git \
-#   # ngx_http_geoip2_module needs libmaxminddb-dev
-#   && apk add --no-cache libmaxminddb-dev \
-#   \
-#   && git clone --depth 1 --branch ${GEOIP2_VERSION} https://github.com/leev/ngx_http_geoip2_module ngx_http_geoip2_module \
-#   && apk del .build-deps
 
 RUN \
 	apk add --no-cache --virtual .build-deps \
@@ -139,15 +130,12 @@ RUN \
 RUN \
   echo "Cloning ngx_http_geoip2_module ..." \
   && cd /usr/src \
-  && git clone --depth 1 --branch ${GEOIP2_VERSION} https://github.com/leev/ngx_http_geoip2_module ngx_http_geoip2_module
+  && git clone --depth 1 --branch ${GEOIP2_VERSION} https://github.com/leev/ngx_http_geoip2_module
 
 RUN \
   echo "Cloning njs for nginx ..." \
   && cd /usr/src \
-  && git clone https://github.com/nginx/njs \ 
-  && cd njs \ 
-  && ./configure \
-  && make -j$(getconf _NPROCESSORS_ONLN)
+  && git clone https://github.com/nginx/njs
 
 RUN \	
   echo "Cloning auth_jwt ..." \

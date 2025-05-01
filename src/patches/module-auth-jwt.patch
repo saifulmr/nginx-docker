@@ -1,0 +1,20 @@
+--- src/ngx_http_auth_jwt_module.c	2025-05-01 11:47:43.282966527 -0400
++++ src/ngx_http_auth_jwt_module.c	2025-05-01 11:48:41.870175676 -0400
+@@ -901,17 +901,10 @@
+     jwt_location.data += strlen(COOKIE_PREFIX);
+     jwt_location.len -= strlen(COOKIE_PREFIX);
+ 
+-#ifndef NGX_LINKED_LIST_COOKIES
+-    if (ngx_http_parse_multi_header_lines(&r->headers_in.cookies, &jwt_location, &jwtCookieVal) != NGX_DECLINED)
+-    {
+-      has_cookie = true;
+-    }
+-#else
+     if (ngx_http_parse_multi_header_lines(r, r->headers_in.cookie, &jwt_location, &jwtCookieVal) != NULL)
+     {
+       has_cookie = true;
+     }
+-#endif
+ 
+     if (has_cookie == true)
+     {
